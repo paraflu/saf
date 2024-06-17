@@ -456,4 +456,9 @@ class Saf {
       return null;
     }
   }
+
+  /// check if a file exists
+  Future<bool?> fileExists(String filename) async {
+    return await exists(Uri.parse(makeUriString(path: filename)));
+  }
 }
