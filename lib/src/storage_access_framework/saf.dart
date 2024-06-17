@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:saf/src/storage_access_framework/api.dart';
 import 'package:saf/src/channels.dart';
 
@@ -424,5 +426,35 @@ class Saf {
       if (uriString == uriPermission.uri.toString()) return true;
     }
     return false;
+  }
+
+  /// Write a file on the directory
+  static Future<Map<String, dynamic>?> writeContent(
+      {required String directory,
+      required String fileName,
+      required Uint8List content}) async {
+    try {
+      const kSyncWithExternalFilesDirectory = "createFile";
+      final _uriString = makeUriString(path: directory, isTreeUri: true);
+
+      final canWrite = await isPersistedPermissionDirectoryFor(_uriString);
+      if (canWrite != true) {
+        throw Exception("No writing permissions for $_uriString");
+      }
+
+      final args = <String, dynamic>{
+        'mimeType': 'any',
+        'content': content,
+        'displayName': fileName,
+        'directoryUri': _uriString
+      };
+      Map<String, dynamic>? result =
+          await kDocumentFileChannel.invokeMapMethod<String, dynamic>(
+              kSyncWithExternalFilesDirectory, args);
+      if (result == null) return null;
+      return result;
+    } catch (e) {
+      return null;
+    }
   }
 }
