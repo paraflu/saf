@@ -448,6 +448,7 @@ class Saf {
         'displayName': fileName,
         'directoryUri': _uriString
       };
+
       Map<String, dynamic>? result =
           await kDocumentFileChannel.invokeMapMethod<String, dynamic>(
               kSyncWithExternalFilesDirectory, args);
