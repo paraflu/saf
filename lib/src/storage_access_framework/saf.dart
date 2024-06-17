@@ -429,13 +429,11 @@ class Saf {
   }
 
   /// Write a file on the directory
-  static Future<Map<String, dynamic>?> writeContent(
-      {required String directory,
-      required String fileName,
-      required Uint8List content}) async {
+  Future<Map<String, dynamic>?> writeContent(
+      {required String fileName, required Uint8List content}) async {
     try {
       const kSyncWithExternalFilesDirectory = "createFile";
-      final _uriString = makeUriString(path: directory, isTreeUri: true);
+      final _uriString = makeUriString(path: _directory, isTreeUri: true);
 
       final canWrite = await isPersistedPermissionDirectoryFor(_uriString);
       if (canWrite != true) {
