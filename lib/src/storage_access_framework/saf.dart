@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:saf/src/storage_access_framework/api.dart';
 import 'package:saf/src/channels.dart';
+import 'package:saf/src/storage_access_framework/document_file.dart';
 
 /// Extend the native SAF api funtionality and add some of the real Use case methods for Applicatoions
 class Saf {
@@ -424,5 +427,38 @@ class Saf {
       if (uriString == uriPermission.uri.toString()) return true;
     }
     return false;
+  }
+
+  /// Create a file from strings
+  ///
+  ///
+  Future<DocumentFile?> writeContentAsStrings(
+      {required String fileName, required String content}) async {
+    try {
+      final parent = makeUriString(path: _directory, isTreeUri: true);
+      final documentFile = await createFileAsString(Uri.parse(parent),
+          mimeType: 'any', displayName: fileName, content: content);
+      return documentFile;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Write a file on the directory
+  Future<DocumentFile?> writeContentAsBytes(
+      {required String fileName, required Uint8List content}) async {
+    try {
+      final parent = makeUriString(path: _directory, isTreeUri: true);
+      final documentFile = await createFileAsBytes(Uri.parse(parent),
+          mimeType: 'any', displayName: fileName, content: content);
+      return documentFile;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// check if a file exists
+  Future<bool?> fileExists(String filename) async {
+    return await exists(Uri.parse(makeUriString(path: filename)));
   }
 }
