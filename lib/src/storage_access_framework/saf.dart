@@ -433,24 +433,34 @@ class Saf {
   ///
   ///
   Future<DocumentFile?> writeContentAsStrings(
-      {required String fileName, required String content}) async {
-    try {
-      final parent = makeUriString(path: _directory, isTreeUri: true);
-      final documentFile = await createFileAsString(Uri.parse(parent),
-          mimeType: 'any', displayName: fileName, content: content);
-      return documentFile;
-    } catch (e) {
-      return null;
-    }
+      {required String fileName,
+      required String content,
+      bool overwrite = false}) async {
+    return await writeContentAsBytes(
+        fileName: fileName, content: Uint8List.fromList(content.codeUnits));
   }
 
   /// Write a file on the directory
-  Future<DocumentFile?> writeContentAsBytes(
-      {required String fileName, required Uint8List content}) async {
+  Future<DocumentFile?> writeContentAsBytes({
+    required String fileName,
+    required Uint8List content,
+    bool overwrite = false,
+  }) async {
     try {
       final parent = makeUriString(path: _directory, isTreeUri: true);
-      final documentFile = await createFileAsBytes(Uri.parse(parent),
-          mimeType: 'any', displayName: fileName, content: content);
+      final uri = Uri.parse(parent);
+      if (overwrite) {
+        final fileExists = await exists(uri);
+        if (fileExists == true) {
+          await delete(uri);
+        }
+      }
+      final documentFile = await createFileAsBytes(
+        uri,
+        mimeType: 'any',
+        displayName: fileName,
+        content: content,
+      );
       return documentFile;
     } catch (e) {
       return null;
