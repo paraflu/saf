@@ -437,7 +437,9 @@ class Saf {
       required String content,
       bool overwrite = false}) async {
     return await writeContentAsBytes(
-        fileName: fileName, content: Uint8List.fromList(content.codeUnits));
+        fileName: fileName,
+        content: Uint8List.fromList(content.codeUnits),
+        overwrite: overwrite);
   }
 
   /// Write a file on the directory
@@ -450,9 +452,16 @@ class Saf {
       final parent = makeUriString(path: _directory, isTreeUri: true);
       final uri = Uri.parse(parent);
       if (overwrite) {
-        final fileExists = await exists(uri);
-        if (fileExists == true) {
-          await delete(uri);
+        // final fileUri = Uri.parse(
+        //   makeUriString(path: "${_directory}/$fileName", isTreeUri: true),
+        // );
+        // final fileExists = await fileExists(fileName);
+        final isFile = await fileExists(fileName);
+        if (isFile ?? false) {
+          final fileUri = Uri.parse(
+            makeUriString(path: "${_directory}/$fileName", isTreeUri: false),
+          );
+          await delete(fileUri);
         }
       }
       final documentFile = await createFileAsBytes(
@@ -469,6 +478,7 @@ class Saf {
 
   /// check if a file exists
   Future<bool?> fileExists(String filename) async {
-    return await exists(Uri.parse(makeUriString(path: filename)));
+    return await exists(
+        Uri.parse(makeUriString(path: "$_directory/$filename")));
   }
 }
