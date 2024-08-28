@@ -459,7 +459,7 @@ class Saf {
         final isFile = await fileExists(fileName);
         if (isFile ?? false) {
           final fileUri = Uri.parse(
-            makeUriString(path: "${_directory}/$fileName", isTreeUri: false),
+            makeUriString(path: "$_directory/$fileName", isTreeUri: false),
           );
           await delete(fileUri);
         }
