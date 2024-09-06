@@ -20,7 +20,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Saf saf;
-  var _paths = [];
+  var _paths = <String>[];
   @override
   void initState() {
     Permission.storage.request();
@@ -29,9 +29,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   loadImage(paths, {String k = ""}) {
-    var tempPaths = [];
+    var tempPaths = <String>[];
     for (String path in paths) {
-      if (path.endsWith(".jpg")) {
+      if (path.startsWith("test")) {
         tempPaths.add(path);
       }
     }
@@ -54,67 +54,75 @@ class _MyAppState extends State<MyApp> {
                 if (_paths.isNotEmpty)
                   ..._paths.map(
                     (path) => Card(
-                      child: Image.file(
-                        File(path),
-                      ),
+                      child: Text(path),
                     ),
                   )
               ],
             ),
           ),
         ),
-        bottomNavigationBar: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(Colors.deepPurpleAccent),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            runSpacing: 4,
+            spacing: 4,
+            children: [
+              ElevatedButton(
+                // style: ButtonStyle(
+                //   backgroundColor:
+                //       MaterialStateProperty.all(Colors.deepPurpleAccent),
+                // ),
+                onPressed: () async {
+                  Saf.releasePersistedPermissions();
+                },
+                child: const Text("Release*"),
               ),
-              onPressed: () async {
-                Saf.releasePersistedPermissions();
-              },
-              child: const Text("Release*"),
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(Colors.blueGrey.shade700),
+              ElevatedButton(
+                // style: ButtonStyle(
+                //   backgroundColor:
+                //       MaterialStateProperty.all(Colors.blueGrey.shade700),
+                // ),
+                onPressed: () async {
+                  var cachedFilesPath = await saf.cache();
+                  if (cachedFilesPath != null) {
+                    loadImage(cachedFilesPath);
+                  }
+                },
+                child: const Text("Cache"),
               ),
-              onPressed: () async {
-                var cachedFilesPath = await saf.cache();
-                if (cachedFilesPath != null) {
-                  loadImage(cachedFilesPath);
-                }
-              },
-              child: const Text("Cache"),
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.green),
+              ElevatedButton(
+                // style: ButtonStyle(
+                //   backgroundColor: MaterialStateProperty.all(Colors.green),
+                // ),
+                onPressed: () async {
+                  var isSync = await saf.sync();
+                  if (isSync as bool) {
+                    var _paths = await saf.getCachedFilesPath();
+                    loadImage(_paths);
+                  }
+                },
+                child: const Text("Sync"),
               ),
-              onPressed: () async {
-                var isSync = await saf.sync();
-                if (isSync as bool) {
-                  var _paths = await saf.getCachedFilesPath();
-                  loadImage(_paths);
-                }
-              },
-              child: const Text("Sync"),
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.orange),
+              ElevatedButton(
+                // style: ButtonStyle(
+                //   backgroundColor: MaterialStateProperty.all(Colors.orange),
+                // ),
+                onPressed: () async {
+                  var isClear = await saf.clearCache();
+                  if (isClear != null && isClear) {
+                    loadImage([]);
+                  }
+                },
+                child: const Text("Clear"),
               ),
-              onPressed: () async {
-                var isClear = await saf.clearCache();
-                if (isClear != null && isClear) {
-                  loadImage([]);
-                }
-              },
-              child: const Text("Clear"),
-            ),
-          ],
+              ElevatedButton(
+                  onPressed: () async {
+                    print(await saf.fileExists('test.txt'));
+                  },
+                  child: const Text("Write"))
+            ],
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(

@@ -2,6 +2,10 @@
     package="com.ivehement.saf_example">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> 
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEOS" /> 
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" /> 
+
    <application
         android:label="saf_example"
         android:name="${applicationName}"
